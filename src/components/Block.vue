@@ -7,9 +7,29 @@
 <script>
 export default {
   name: 'Block',
+  data() {
+    return {
+      timer: null,
+      reactionTimer: 0,
+    }
+  },
+  mounted() {
+    this.startTimer()
+  },
   methods: {
     handleClickBlock() {
-      this.$emit('handleClickBlock');
+      this.stopTimer()
+      this.$emit('end', this.reactionTimer)
+    },
+    startTimer() {
+      let startTime = Date.now();
+      this.timer = setInterval(() => {
+          var elapsedTime = Date.now() - startTime;
+          this.reactionTimer = (elapsedTime / 1000).toFixed(3);
+      }, 100);
+    },
+    stopTimer() {
+      clearInterval(this.timer)
     }
   }
 }

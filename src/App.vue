@@ -1,22 +1,13 @@
 <template>
   <h1>Reaction Timer</h1>
-  <button @click="startGame" class="btn btn--play" :disabled="isPlaying">Play</button>
-  <Block v-if="isBlockShown" @handleClickBlock="clickBlock" />
-  <Results 
-    v-if="isResultsShown"
-    :resultsText="resultsText"
-    :seconds="seconds"
-  />
-  <h1>{{ resultsText }}</h1>
+  <button @click="startGame" class="btn btn--play" :disabled="isPlaying">
+    {{ hasPlayed ? "Play again": "Play" }}
+  </button>
+  <Block v-if="isPlaying" @end="handleEndGame"/>  
+  <Results v-if="isResultsShown" :reactionTimerResults="parseFloat(reactionTimerResults)" />
 </template>
 
 <script>
-// 1. Style play button - DONE
-// 2. Clicking play displays block component but with a delay DONE
-// 3. Clicking block component calculates the speed it was clicked after it was displayed.
-// 4. (EXTRA) Create extra component for buttons like play
-// 5. Add extra data to keep track if the player is currently playing the game
-
 import Block from './components/Block.vue'
 import Results from './components/Results.vue'
 
@@ -25,11 +16,9 @@ export default {
   data() {
     return {
       isPlaying: false,
-      isBlockShown: false,
-      isBlockClicked: false,
+      reactionTimerResults: null,
       isResultsShown: false,
-      seconds: null,
-      resultsText: '',
+      hasPlayed: false,
     }
   },
   components: {
@@ -38,38 +27,16 @@ export default {
   },
   methods: {
     startGame() {
-      // Generate random number
       setTimeout(() => {
-        this.isBlockShown = true
         this.isPlaying = true
-        console.log(this.isBlockShown);
-
-        // Fix error dito
-        let startTime = Date.now();
-        let timesRun = 0;
-        let seconds = setInterval(() => {
-            var elapsedTime = Date.now() - startTime;
-            console.log((elapsedTime / 1000).toFixed(3));
-            this.seconds = (elapsedTime / 1000).toFixed(3);
-
-            timesRun += 1;
-            if(timesRun === 80){
-                clearInterval(seconds);
-            }
-        }, 100);
-      }, (Math.floor(Math.random() * 6)) * 1000);
+      }, (Math.random() * 6) * 1000);
+      this.isResultsShown = false
     },
-    clickBlock() {
-      this.isBlockClicked = true
+    handleEndGame(reactionTimer) {
+      this.reactionTimerResults = reactionTimer;
+      this.isPlaying = false
       this.isResultsShown = true
-      alert(this.seconds);
-      if (this.seconds < 1) {
-        this.resultsText = "Fast Reflex!"
-      } else if (this.seconds < 4) {
-        this.resultsText = "Slooooow"
-      } else if (this.seconds >= 5) {
-        this.resultsText = "Snail Pace..."
-      }
+      this.hasPlayed = true
     }
   }
 }
